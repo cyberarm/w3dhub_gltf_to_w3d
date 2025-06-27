@@ -29,7 +29,7 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
     W3dPivotStruct pivot = {};
     uint32_t pivot_parent_idx = 0xffffffff;
 
-    // Write RootTransform
+    // write RootTransform
     strcpy(pivot.Name, "RootTransform");
     pivot.ParentIdx = pivot_parent_idx;
     pivot.Translation.X = 0;
@@ -73,44 +73,44 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
         pivots.emplace_back(pivot);
     }
 
-    ChunkSaveClass csave = ChunkSaveClass(stream);
-    csave.Begin_Chunk(W3D_CHUNK_HIERARCHY);
+    auto writer = ChunkSaveClass(stream);
+    writer.begin_chunk(W3D_CHUNK_HIERARCHY);
     W3dHierarchyStruct hierarchy_header = {};
-    csave.Begin_Chunk(W3D_CHUNK_HIERARCHY_HEADER);
+    writer.begin_chunk(W3D_CHUNK_HIERARCHY_HEADER);
     hierarchy_header.Version = W3D_CURRENT_HTREE_VERSION;
     strcpy(hierarchy_header.Name, "ts_level");
     hierarchy_header.NumPivots = pivots.size();
     W3dVectorStruct v = {0, 0, 0};
     hierarchy_header.Center = v;
-    csave.Write((uint8_t*)&hierarchy_header, sizeof(W3dHierarchyStruct));
-    csave.End_Chunk();
+    writer.write((uint8_t *) &hierarchy_header, sizeof(W3dHierarchyStruct));
+    writer.end_chunk();
 
     // WRITE PIVOTS!
-    csave.Begin_Chunk(W3D_CHUNK_PIVOTS);
+    writer.begin_chunk(W3D_CHUNK_PIVOTS);
     for(auto piv : pivots)
     {
-        csave.Write((uint8_t*)&piv, sizeof(W3dPivotStruct));
+        writer.write((uint8_t *) &piv, sizeof(W3dPivotStruct));
     }
-    csave.End_Chunk();
-    csave.End_Chunk();
+    writer.end_chunk();
+    writer.end_chunk();
 
 
     W3dHLodHeaderStruct hLodHeaderStruct = {};
     W3dHLodArrayHeaderStruct hLodArrayHeaderStruct = {};
-    csave.Begin_Chunk(W3D_CHUNK_HLOD);
-    csave.Begin_Chunk(W3D_CHUNK_HLOD_HEADER);
+    writer.begin_chunk(W3D_CHUNK_HLOD);
+    writer.begin_chunk(W3D_CHUNK_HLOD_HEADER);
     hLodHeaderStruct.Version = W3D_CURRENT_HLOD_VERSION;
     strcpy(hLodHeaderStruct.Name, "ts_level");
     strcpy(hLodHeaderStruct.HierarchyName, "ts_level");
     hLodHeaderStruct.LodCount = 1;
-    csave.Write((uint8_t*)&hLodHeaderStruct, sizeof(W3dHLodHeaderStruct));
-    csave.End_Chunk();
-    csave.Begin_Chunk(W3D_CHUNK_HLOD_PROXY_ARRAY);
-    csave.Begin_Chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER);
+    writer.write((uint8_t *) &hLodHeaderStruct, sizeof(W3dHLodHeaderStruct));
+    writer.end_chunk();
+    writer.begin_chunk(W3D_CHUNK_HLOD_PROXY_ARRAY);
+    writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER);
     hLodArrayHeaderStruct.ModelCount = pivots.size();
     hLodArrayHeaderStruct.MaxScreenSize = 0;
-    csave.Write((uint8_t*)&hLodArrayHeaderStruct, sizeof(W3dHLodArrayHeaderStruct));
-    csave.End_Chunk();
+    writer.write((uint8_t *) &hLodArrayHeaderStruct, sizeof(W3dHLodArrayHeaderStruct));
+    writer.end_chunk();
     W3dHLodSubObjectStruct w3DHLodSubObjectStruct = {};
     size_t i = 0;
     for(auto piv : pivots)
@@ -122,7 +122,7 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
             continue;
         }
 
-        csave.Begin_Chunk(W3D_CHUNK_HLOD_SUB_OBJECT);
+        writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT);
         std::string name = piv.Name;
         size_t tilde_index = name.find('~');
         printf("tilde: %zu (%s)\n", tilde_index, name.c_str());
@@ -132,13 +132,13 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
         }
         strcpy(w3DHLodSubObjectStruct.Name, name.c_str());
         w3DHLodSubObjectStruct.BoneIndex = i;
-        csave.Write((uint8_t*)&w3DHLodSubObjectStruct, sizeof(W3dHLodSubObjectStruct));
-        csave.End_Chunk();
+        writer.write((uint8_t *) &w3DHLodSubObjectStruct, sizeof(W3dHLodSubObjectStruct));
+        writer.end_chunk();
 
         i++;
     }
-    csave.End_Chunk();
-    csave.End_Chunk();
+    writer.end_chunk();
+    writer.end_chunk();
 
     SDL_CloseIO(stream);
 
@@ -260,7 +260,7 @@ int main(int, char**)
     // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
     // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-    // - Read 'docs/FONTS.md' for more instructions and details.
+    // - read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //style.FontSizeBase = 20.0f;
     //io.Fonts->AddFontDefault();

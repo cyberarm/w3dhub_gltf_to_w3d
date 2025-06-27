@@ -8,6 +8,8 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 
 set(SOURCES
         main.cpp
+        src/w3d_hierarchy_model.cpp
+        src/w3d_mesh.cpp
 )
 
 set(IMGUI_SOURCES
@@ -25,6 +27,8 @@ set(WWLIB_SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${WWLIB_SOURCES})
+
+target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 target_include_directories(${PROJECT_NAME} PRIVATE vendor/wwlib)
 target_include_directories(${PROJECT_NAME} PRIVATE vendor/tinygltf)

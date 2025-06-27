@@ -1274,7 +1274,7 @@ struct W3dMeshAABTreeNode {
 	base pose to use only matrices with certain properties.  For 
 	example, if we wanted the base pose to use translations only,
 	the fixup transform for each node is a transform which when
-	multiplied by the real node's world transform, yeilds a pure
+	multiplied by the real node's world transform, yields a pure
 	translation matrix.  Fixup matrices are used in the mesh
 	exporter since all vertices must be transformed by their inverses
 	in order to make things work.  They also show up in the animation
@@ -1487,9 +1487,9 @@ struct W3dMorphAnimKeyStruct {
 	(gth) 09/22/2000 - Simplified the HModel file format.  The W3DHModelAuxDataStruct
 	was un-needed and moved to w3d_obsolete.h.  The safe way to parse previous
 	and current HModel formats is this:
-	- Read in the header from W3D_CHUNK_HMODEL_HEADER
+	- read in the header from W3D_CHUNK_HMODEL_HEADER
 	- Allocate space for 'NumConnections' nodes that will follow
-	- Read in the rest of the chunks
+	- read in the rest of the chunks
 		- Create a sub-object for W3D_CHUNK_NODE, W3D_CHUNK_COLLISION_NODE, or
 		  W3D_CHUNK_SKIN_NODE.
 		- Skip the OBSOLETE_W3D_CHUNK_HMODEL_AUX_DATA and OBSOLETE_W3D_CHUNK_SHADOW_NODE

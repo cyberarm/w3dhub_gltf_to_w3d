@@ -73,55 +73,55 @@
 
 struct ChunkHeader {
     // Functions.
-    ChunkHeader() : ChunkType(0), ChunkSize(0) {}
+    ChunkHeader() : m_chunk_type(0), m_chunk_size(0) {}
 
     ChunkHeader(uint32_t type, uint32_t size) {
-        ChunkType = type;
-        ChunkSize = size;
+        m_chunk_type = type;
+        m_chunk_size = size;
     }
 
     // Use these accessors to ensure you correctly deal with the data in the chunk header
-    void Set_Type(uint32_t type) { ChunkType = type; }
+    void set_type(uint32_t type) { m_chunk_type = type; }
 
-    uint32_t Get_Type(void) { return ChunkType; }
+    uint32_t get_type(void) { return m_chunk_type; }
 
-    void Set_Size(uint32_t size) {
-        ChunkSize &= 0x80000000;
-        ChunkSize |= (size & 0x7FFFFFFF);
+    void set_size(uint32_t size) {
+        m_chunk_size &= 0x80000000;
+        m_chunk_size |= (size & 0x7FFFFFFF);
     }
 
-    void Add_Size(uint32_t add) { Set_Size(Get_Size() + add); }
+    void add_size(uint32_t add) { set_size(get_size() + add); }
 
-    uint32_t Get_Size(void) { return (ChunkSize & 0x7FFFFFFF); }
+    uint32_t get_size(void) { return (m_chunk_size & 0x7FFFFFFF); }
 
-    void Set_Sub_Chunk_Flag(bool onoff) { if (onoff) { ChunkSize |= 0x80000000; } else { ChunkSize &= 0x7FFFFFFF; }}
+    void set_sub_chunk_flag(bool onoff) { if (onoff) { m_chunk_size |= 0x80000000; } else { m_chunk_size &= 0x7FFFFFFF; }}
 
-    int Get_Sub_Chunk_Flag(void) { return (ChunkSize & 0x80000000); }
+    int get_sub_chunk_flag(void) { return (m_chunk_size & 0x80000000); }
 
     // Chunk type and size.
-    // Note: MSB of ChunkSize is used to indicate whether this chunk
+    // Note: MSB of m_chunk_size is used to indicate whether this chunk
     // contains other chunks or data.
-    uint32_t ChunkType;
-    uint32_t ChunkSize;
+    uint32_t m_chunk_type;
+    uint32_t m_chunk_size;
 };
 
 struct MicroChunkHeader {
-    MicroChunkHeader() {}
+    MicroChunkHeader() : m_chunk_type(0), m_chunk_size(0) {}
 
-    MicroChunkHeader(uint8_t type, uint8_t size) { ChunkType = type, ChunkSize = size; }
+    MicroChunkHeader(uint8_t type, uint8_t size) { m_chunk_type = type, m_chunk_size = size; }
 
-    void Set_Type(uint8_t type) { ChunkType = type; }
+    void set_type(uint8_t type) { m_chunk_type = type; }
 
-    uint8_t Get_Type(void) { return ChunkType; }
+    uint8_t get_type(void) { return m_chunk_type; }
 
-    void Set_Size(uint8_t size) { ChunkSize = size; }
+    void set_size(uint8_t size) { m_chunk_size = size; }
 
-    void Add_Size(uint8_t add) { Set_Size(Get_Size() + add); }
+    void add_size(uint8_t add) { set_size(get_size() + add); }
 
-    uint8_t Get_Size(void) { return ChunkSize; }
+    uint8_t get_size(void) { return m_chunk_size; }
 
-    uint8_t ChunkType;
-    uint8_t ChunkSize;
+    uint8_t m_chunk_type;
+    uint8_t m_chunk_size;
 };
 
 
@@ -134,30 +134,30 @@ struct MicroChunkHeader {
 **************************************************************************************/
 class ChunkSaveClass {
 public:
-    ChunkSaveClass(SDL_IOStream *stream);
+    explicit ChunkSaveClass(SDL_IOStream *stream);
 
     // Chunk methods
-    bool Begin_Chunk(uint32_t id);
+    bool begin_chunk(uint32_t id);
 
-    bool End_Chunk();
+    bool end_chunk();
 
-    int Cur_Chunk_Depth();
+    int current_chunk_depth();
 
     // Micro chunk methods
-    bool Begin_Micro_Chunk(uint32_t id);
+    bool begin_micro_chunk(uint32_t id);
 
-    bool End_Micro_Chunk();
+    bool end_micro_chunk();
 
-    // Write data into the file
-    uint32_t Write(const void *buf, uint32_t nbytes);
+    // write data into the file
+    uint32_t write(const void *buf, uint32_t nbytes);
 
-    uint32_t Write(const IOVector2Struct &v);
+    uint32_t write(const IOVector2Struct &v);
 
-    uint32_t Write(const IOVector3Struct &v);
+    uint32_t write(const IOVector3Struct &v);
 
-    uint32_t Write(const IOVector4Struct &v);
+    uint32_t write(const IOVector4Struct &v);
 
-    uint32_t Write(const IOQuaternionStruct &q);
+    uint32_t write(const IOQuaternionStruct &q);
 
 private:
 
@@ -165,17 +165,17 @@ private:
         MAX_STACK_DEPTH = 256
     };
 
-    SDL_IOStream *File;
+    SDL_IOStream *m_file;
 
     // Chunk building support
-    int StackIndex;
-    int PositionStack[MAX_STACK_DEPTH];
-    ChunkHeader HeaderStack[MAX_STACK_DEPTH];
+    int m_stack_index;
+    int m_position_stack[MAX_STACK_DEPTH];
+    ChunkHeader m_header_stack[MAX_STACK_DEPTH];
 
     // MicroChunk building support
-    bool InMicroChunk;
-    int MicroChunkPosition;
-    MicroChunkHeader MCHeader;
+    bool m_in_micro_chunk;
+    int m_micro_chunk_position;
+    MicroChunkHeader m_micro_chunk_header;
 };
 
 
@@ -189,47 +189,47 @@ private:
 class ChunkLoadClass {
 public:
 
-    ChunkLoadClass(SDL_IOStream *stream);
+    explicit ChunkLoadClass(SDL_IOStream *stream);
 
     // Chunk methods
-    bool Open_Chunk();
+    bool open_chunk();
 
-    bool Close_Chunk();
+    bool close_chunk();
 
-    uint32_t Cur_Chunk_ID();
+    uint32_t current_chunk_id();
 
-    uint32_t Cur_Chunk_Length();
+    uint32_t current_chunk_length();
 
-    int Cur_Chunk_Depth();
+    int current_chunk_depth();
 
-    int Contains_Chunks();
+    int contains_chunks();
 
     // Micro Chunk methods
-    bool Open_Micro_Chunk();
+    bool open_micro_chunk();
 
-    bool Close_Micro_Chunk();
+    bool close_micro_chunk();
 
-    uint32_t Cur_Micro_Chunk_ID();
+    uint32_t current_micro_chunk_id();
 
-    uint32_t Cur_Micro_Chunk_Length();
+    uint32_t current_micro_chunk_length();
 
-    // Read a block of bytes from the output stream.
-    uint32_t Read(void *buf, uint32_t nbytes);
+    // read a block of bytes from the output stream.
+    uint32_t read(void *buf, uint32_t num_of_bytes);
 
-    uint32_t Read(IOVector2Struct *v);
+    uint32_t read(IOVector2Struct *v);
 
-    uint32_t Read(IOVector3Struct *v);
+    uint32_t read(IOVector3Struct *v);
 
-    uint32_t Read(IOVector4Struct *v);
+    uint32_t read(IOVector4Struct *v);
 
-    uint32_t Read(IOQuaternionStruct *q);
+    uint32_t read(IOQuaternionStruct *q);
 
-    // Seek over a block of bytes in the stream (same as Read but don't copy the data to a buffer)
-    uint32_t Seek(uint32_t nbytes);
+    // seek over a block of bytes in the stream (same as read but don't copy the data to a buffer)
+    uint32_t seek(uint32_t num_of_bytes);
 
     // Sneak peek at the next chunk that will be opened.  Beware, if you need
     // this, then you are probably hacking so be careful!
-    bool Peek_Next_Chunk(uint32_t *set_id, uint32_t *set_size);
+    bool peek_next_chunk(uint32_t *set_id, uint32_t *set_size);
 
 private:
 
@@ -237,17 +237,17 @@ private:
         MAX_STACK_DEPTH = 256
     };
 
-    SDL_IOStream *File;
+    SDL_IOStream *m_file;
 
     // Chunk reading support
-    int StackIndex;
-    uint32_t PositionStack[MAX_STACK_DEPTH];
-    ChunkHeader HeaderStack[MAX_STACK_DEPTH];
+    int m_stack_index;
+    uint32_t m_position_stack[MAX_STACK_DEPTH];
+    ChunkHeader m_header_stack[MAX_STACK_DEPTH];
 
     // Micro-chunk reading support
-    bool InMicroChunk;
-    int MicroChunkPosition;
-    MicroChunkHeader MCHeader;
+    bool m_in_micro_chunk;
+    int m_micro_chunk_position;
+    MicroChunkHeader m_micro_chunk_header;
 
 };
 
@@ -263,11 +263,11 @@ private:
 **	WRITE_WWSTRING_CHUNK(csave, CHUNKID_NAME, string);
 **	WRITE_WIDESTRING_CHUNK(csave, CHUNKID_WIDE_NAME, wide_string);
 **
-**	csave.Begin_Chunk(PHYSGRID_CHUNK_VARIABLES);
+**	csave.begin_chunk(PHYSGRID_CHUNK_VARIABLES);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_VERSION,version);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_DUMMYVISID,DummyVisId);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_BASEVISID,BaseVisId);
-**	csave.End_Chunk();
+**	csave.end_chunk();
 **
 */
 #define WRITE_WWSTRING_CHUNK(csave, id, var) { \
@@ -286,13 +286,13 @@ private:
 **	of a chunk into a string object.
 ** Example:
 **
-**	while (cload.Open_Chunk()) {
+**	while (cload.open_chunk()) {
 **
-**		switch(cload.Cur_Chunk_ID()) {
+**		switch(cload.current_chunk_id()) {
 **			READ_WWSTRING_CHUNK(cload,CHUNKID_NAME,string);
 **			READ_WIDESTRING_CHUNK(cload,CHUNKID_WIDE_NAME,wide_string);
 **		}
-**		cload.Close_Chunk();
+**		cload.close_chunk();
 **	}
 **
 */
@@ -308,11 +308,11 @@ private:
 ** Note that you should always wrap your micro-chunks inside a normal chunk.
 ** Example:
 **
-**	csave.Begin_Chunk(PHYSGRID_CHUNK_VARIABLES);
+**	csave.begin_chunk(PHYSGRID_CHUNK_VARIABLES);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_VERSION,version);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_DUMMYVISID,DummyVisId);
 **	WRITE_MICRO_CHUNK(csave,PHYSGRID_VARIABLE_BASEVISID,BaseVisId);
-**	csave.End_Chunk();
+**	csave.end_chunk();
 */
 #define WRITE_MICRO_CHUNK(csave, id, var) { \
     csave.Begin_Micro_Chunk(id); \
@@ -345,14 +345,14 @@ private:
 ** READ_MICRO_CHUNK - use this macro in a switch statement to read a micro chunk into a variable
 ** Example:
 **
-**	while (cload.Open_Micro_Chunk()) {
+**	while (cload.open_micro_chunk()) {
 **
-**		switch(cload.Cur_Micro_Chunk_ID()) {
+**		switch(cload.current_micro_chunk_id()) {
 **			READ_MICRO_CHUNK(cload,PHYSGRID_VARIABLE_VERSION,version);
 **			READ_MICRO_CHUNK(cload,PHYSGRID_VARIABLE_DUMMYVISID,DummyVisId);
 **			READ_MICRO_CHUNK(cload,PHYSGRID_VARIABLE_BASEVISID,BaseVisId);
 **		}
-**		cload.Close_Micro_Chunk();
+**		cload.close_micro_chunk();
 **	}
 */
 #define READ_MICRO_CHUNK(cload, id, var)                        \
