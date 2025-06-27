@@ -1,0 +1,9 @@
+[submodule "SDL"]
+	path = SDL
+	url = https://github.com/libsdl-org/SDL
+[submodule "vendor/--depth"]
+	path = vendor/--depth
+	url = https://github.com/libsdl-org/SDL
+[submodule "vendor/tinygltf"]
+	path = vendor/tinygltf
+	url = https://github.com/syoyo/tinygltf
