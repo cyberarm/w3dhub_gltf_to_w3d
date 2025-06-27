@@ -45,6 +45,13 @@ jobs:
             c_compiler: cl
 
     steps:
+    - uses: libsdl-org/setup-sdl@main
+      if: matrix.os == 'ubuntu-latest'
+      id: sdl
+      with:
+        install-linux-dependencies: true
+        version: 3-latest
+          
     - uses: actions/checkout@v4
 
     - name: Set reusable strings
