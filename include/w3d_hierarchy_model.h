@@ -38,12 +38,17 @@ private:
     W3dHierarchyModel(tinygltf::Model model, ChunkSaveClass csave, bool optimize_for_terrain = false);
     ~W3dHierarchyModel();
 
+    bool convert();
+    bool add_root_transform();
+    bool add_pivots();
+    bool add_proxies();
+
     bool write();
     bool write_hierarchy_header();
     bool write_pivots();
-    bool write_pivot_fixups() { return false; };
+    bool write_pivot_fixups();
     bool write_meshes();
-    bool write_hierarchical_level_of_detail() { return false; };
+    bool write_hierarchical_level_of_detail();
 
     bool write_mesh(tinygltf::Mesh &mesh) { return false; };
 };

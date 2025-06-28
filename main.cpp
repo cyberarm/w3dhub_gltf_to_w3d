@@ -1,12 +1,14 @@
+#define TINYGLTF_IMPLEMENTATION
+#define TINYGLTF_NO_STB_IMAGE
+#define TINYGLTF_NO_STB_IMAGE_WRITE
+
 #include <iostream>
 #include <string>
 
 #include "w3d_file.h"
 #include "chunkio.h"
+#include "w3d_hierarchy_model.h"
 
-#define TINYGLTF_IMPLEMENTATION
-#define TINYGLTF_NO_STB_IMAGE
-#define TINYGLTF_NO_STB_IMAGE_WRITE
 #include "tiny_gltf.h"
 
 #include "imgui.h"
@@ -25,6 +27,13 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
     // TODO: Translate GLTF data to W3D data and write it out.
     SDL_IOStream* stream = SDL_IOFromFile(filename.c_str(), "wb");
 
+    auto m_writer = ChunkSaveClass(stream);
+
+    W3dHierarchyModel(model, m_writer, true);
+
+    SDL_CloseIO(stream);
+    return  true;
+
     std::vector<W3dPivotStruct> pivots = {};
     W3dPivotStruct pivot = {};
     uint32_t pivot_parent_idx = 0xffffffff;
@@ -41,7 +50,7 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
     pivot.Rotation.Q[0] = 0;
     pivot.Rotation.Q[1] = 0;
     pivot.Rotation.Q[2] = 0;
-    pivot.Rotation.Q[3] = -1;
+    pivot.Rotation.Q[3] = 1;
 
     pivots.emplace_back(pivot);
 
@@ -68,7 +77,7 @@ bool exportW3DHierarchyModel(tinygltf::Model &model, const std::string& filename
         pivot.Rotation.Q[0] = 0;
         pivot.Rotation.Q[1] = 0;
         pivot.Rotation.Q[2] = 0;
-        pivot.Rotation.Q[3] = -1;
+        pivot.Rotation.Q[3] = 1;
 
         pivots.emplace_back(pivot);
     }
