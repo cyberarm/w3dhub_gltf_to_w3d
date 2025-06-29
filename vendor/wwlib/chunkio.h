@@ -94,7 +94,8 @@ struct ChunkHeader {
 
     uint32_t get_size(void) { return (m_chunk_size & 0x7FFFFFFF); }
 
-    void set_sub_chunk_flag(bool onoff) { if (onoff) { m_chunk_size |= 0x80000000; } else { m_chunk_size &= 0x7FFFFFFF; }}
+    void
+    set_sub_chunk_flag(bool onoff) { if (onoff) { m_chunk_size |= 0x80000000; } else { m_chunk_size &= 0x7FFFFFFF; }}
 
     int get_sub_chunk_flag(void) { return (m_chunk_size & 0x80000000); }
 

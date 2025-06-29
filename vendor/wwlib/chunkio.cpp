@@ -65,7 +65,6 @@
 
 #include <cstring>
 #include <cassert>
-#include <string>
 #include "chunkio.h"
 
 /*********************************************************************************************** 

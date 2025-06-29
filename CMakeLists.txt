@@ -24,6 +24,7 @@ set(IMGUI_SOURCES
 
 set(WWLIB_SOURCES
         vendor/wwlib/chunkio.cpp
+        vendor/wwlib/aabtreebuilder.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${WWLIB_SOURCES})
