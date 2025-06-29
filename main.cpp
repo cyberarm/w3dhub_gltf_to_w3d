@@ -122,6 +122,7 @@ int main(int, char **) {
     (void) io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // FIXME: Dynamically choose font based on platform and whether the font path can be found
     io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf");
 
     // Setup Dear ImGui style
