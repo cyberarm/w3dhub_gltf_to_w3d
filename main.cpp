@@ -213,6 +213,94 @@ int main(int, char **) {
             ImGui::Spacing();
             ImGui::Text("\nTODO: Show TreeView of GLTF contents here once loaded.");
 
+            if (true)
+            {
+                if (ImGui::TreeNodeEx("Model", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // SCENES
+                    if (ImGui::TreeNode("tinygltf_scenes", "Scenes - %d", model.scenes.size())) {
+                        for (const auto &scene: model.scenes) {
+                            if (ImGui::TreeNode(scene.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // NODES
+                    if (ImGui::TreeNode("tinygltf_nodes", "Nodes/Objects - %d", model.nodes.size())) {
+                        for (const auto &node: model.nodes) {
+                            if (ImGui::TreeNode(node.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // MESHES
+                    if (ImGui::TreeNode("tinygltf_meshes", "Meshes - %d", model.meshes.size())) {
+                        for (const auto &mesh: model.meshes) {
+                            if (ImGui::TreeNode(mesh.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // IMAGES
+                    if (ImGui::TreeNode("tinygltf_images", "Images - %d", model.images.size())) {
+                        for (const auto &image: model.images) {
+                            if (ImGui::TreeNode(image.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // TEXTURES
+                    if (ImGui::TreeNode("tinygltf_textures", "Textures - %d", model.textures.size())) {
+                        for (const auto &texture: model.textures) {
+                            if (ImGui::TreeNode(texture.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // MATERIALS
+                    if (ImGui::TreeNode("tinygltf_materials", "Materials - %d", model.materials.size())) {
+                        for (const auto &material: model.materials) {
+                            if (ImGui::TreeNode(material.name.c_str())) {
+                                ImGui::Text("Double Sided: %s", material.doubleSided ? "True" : "False");
+
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // CAMERAS
+                    if (ImGui::TreeNode("tinygltf_cameras", "Cameras - %d", model.cameras.size())) {
+                        for (const auto &camera: model.cameras) {
+                            if (ImGui::TreeNode(camera.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+
+                    // LIGHTS
+                    if (ImGui::TreeNode("tinygltf_lights", "Lights - %d", model.lights.size())) {
+                        for (const auto &light: model.lights) {
+                            if (ImGui::TreeNode(light.name.c_str())) {
+                                ImGui::TreePop();
+                            }
+                        }
+                        ImGui::TreePop();
+                    }
+                    ImGui::TreePop();
+                }
+            }
+
             ImGui::TableNextColumn();
             ImGui::Text("W3D Export Options");
             static char buf[16] = "";
