@@ -10,6 +10,7 @@ set(SOURCES
         main.cpp
         src/w3d_hierarchy_model.cpp
         src/w3d_mesh.cpp
+        src/window.cpp
 )
 
 set(IMGUI_SOURCES

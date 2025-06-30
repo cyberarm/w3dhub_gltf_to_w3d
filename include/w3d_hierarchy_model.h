@@ -13,7 +13,7 @@
 class W3dHierarchyModel
 {
 private:
-    tinygltf::Model m_model;
+    tinygltf::Model *m_model = nullptr;
     ChunkSaveClass m_writer;
     bool m_optimize_for_terrain = false;
     std::vector<W3dPivot> m_meshes = {};
@@ -35,7 +35,7 @@ private:
             0, 0, 0
     };
     public:
-    W3dHierarchyModel(tinygltf::Model model, ChunkSaveClass csave, bool optimize_for_terrain = false);
+    W3dHierarchyModel(tinygltf::Model *model, ChunkSaveClass csave, bool optimize_for_terrain = false);
     ~W3dHierarchyModel();
 
     bool convert();

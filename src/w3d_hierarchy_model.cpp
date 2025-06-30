@@ -4,7 +4,7 @@
 
 #include "w3d_hierarchy_model.h"
 
-W3dHierarchyModel::W3dHierarchyModel(tinygltf::Model model, ChunkSaveClass writer, bool optimize_for_terrain) :
+W3dHierarchyModel::W3dHierarchyModel(tinygltf::Model *model, ChunkSaveClass writer, bool optimize_for_terrain) :
         m_model(model),
         m_writer(writer),
         m_optimize_for_terrain(optimize_for_terrain) {
@@ -49,12 +49,12 @@ bool W3dHierarchyModel::add_pivots() {
 }
 
 bool W3dHierarchyModel::add_proxies() {
-    for (auto node : m_model.nodes)
+    for (auto node : m_model->nodes)
     {
         if (node.mesh < 0)
             continue;
 
-        tinygltf::Mesh mesh = m_model.meshes.at(node.mesh);
+        tinygltf::Mesh mesh = m_model->meshes.at(node.mesh);
 
         // Node's mesh is not a proxy/placeholder/pivot thingy
         if (mesh.name.find('~') == std::string::npos)
@@ -133,7 +133,7 @@ bool W3dHierarchyModel::write_pivot_fixups() {
 }
 
 bool W3dHierarchyModel::write_meshes() {
-    for (auto mesh: m_model.meshes) {
+    for (auto mesh: m_model->meshes) {
         // Don't store proxy mesh data
         if (mesh.name.find('~'))
             continue;
