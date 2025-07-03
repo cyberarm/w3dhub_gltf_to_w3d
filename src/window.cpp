@@ -219,7 +219,7 @@ void Window::draw_main_window() {
     ImGui::SetNextWindowPos({0, 0});
     ImGui::Begin("##", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
                                 ImGuiWindowFlags_NoSavedSettings);
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io.Framerate, m_io.Framerate);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io->Framerate, m_io->Framerate);
     if (ImGui::BeginChild("GLTF", {ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y},
                           ImGuiWindowFlags_NoDecoration)) {
         ImGui::Text("GLTF / GLB");
