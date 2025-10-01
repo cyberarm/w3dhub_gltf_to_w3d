@@ -64,5 +64,5 @@ public:
 
     bool load_model(const std::string &filename);
 
-    bool export_w3d_hierarchy_model(const std::string &filename, bool optimize_for_terrain);
+    bool export_w3d_hierarchy_model(const std::string &container_name, const std::string &filename, bool optimize_for_terrain);
 };

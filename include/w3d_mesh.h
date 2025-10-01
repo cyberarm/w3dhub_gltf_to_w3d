@@ -6,10 +6,11 @@
 
 #include "w3d_file.h"
 #include "tiny_gltf.h"
+#include "chunkio.h"
 
 class W3dMesh {
 private:
-    W3dMeshHeader3Struct m_header;
+    W3dMeshHeader3Struct m_header = {};
     std::vector<IOVector3Struct> m_vertices = {};
     std::vector<IOVector3Struct> m_normals = {};
     std::vector<IOVector3Struct> m_uvs = {};
@@ -27,8 +28,34 @@ private:
     std::vector<uint32_t> m_aabbtree_polygon_indices = {};
     std::vector<W3dMeshAABTreeNode> m_aabbtree_nodes = {};
 
+    std::string m_container_name;
     tinygltf::Model m_gltf_model;
     tinygltf::Mesh m_gltf_mesh;
+    ChunkSaveClass m_writer;
+
 public:
-    explicit W3dMesh(tinygltf::Model &model, tinygltf::Mesh &mesh);
+    explicit W3dMesh(std::string &container_name, const tinygltf::Model &model, const tinygltf::Mesh &mesh, const ChunkSaveClass &writer);
+
+    bool convert();
+    bool add_vertices();
+    bool add_normals();
+    bool add_triangles();
+    bool add_shade_indices();
+    bool add_vertex_material_info();
+    bool add_vertice_materials();
+    bool add_textures();
+    bool add_material_passes();
+    bool add_aabb_tree();
+
+    bool write();
+    bool write_header();
+    bool write_vertices();
+    bool write_normals();
+    bool write_triangles();
+    bool write_shade_indices();
+    bool write_vertex_material_info();
+    bool write_vertice_materials();
+    bool write_textures();
+    bool write_material_passes();
+    bool write_aabb_tree();
 };

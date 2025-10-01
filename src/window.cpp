@@ -23,7 +23,7 @@ Window::Window() {
                 std::cout << "       scale [OpenGL/Vulkan]: " << "none (1, 1, 1)" << std::endl;
         }
 
-        export_w3d_hierarchy_model( W3D_FILENAME, true);
+        export_w3d_hierarchy_model("TS_Level", W3D_FILENAME, true);
     }
 }
 
@@ -361,13 +361,14 @@ void Window::draw_main_window() {
 
 void Window::draw_intro_window() {}
 
-bool Window::export_w3d_hierarchy_model(const std::string &filename,
+bool Window::export_w3d_hierarchy_model(const std::string& container_name, const std::string &filename,
                                         bool optimize_for_terrain = false) {
     SDL_IOStream *stream = SDL_IOFromFile(filename.c_str(), "wb");
 
     auto m_writer = ChunkSaveClass(stream);
 
-    W3dHierarchyModel(&m_model, m_writer, optimize_for_terrain);
+    // FIXME: Unhard code container name
+    W3dHierarchyModel(container_name, &m_model, m_writer, optimize_for_terrain);
 
     SDL_CloseIO(stream);
     return true;

@@ -9,16 +9,18 @@
 #include "tiny_gltf.h"
 
 #include "w3d_pivot.h"
+#include "w3d_mesh.h"
 
 class W3dHierarchyModel
 {
 private:
+    std::string m_container_name;
     tinygltf::Model *m_model = nullptr;
     ChunkSaveClass m_writer;
     bool m_optimize_for_terrain = false;
-    std::vector<W3dPivot> m_meshes = {};
-    std::vector<W3dPivot> m_pivots = {};
-    std::unordered_map<std::string, uint8_t> m_proxy_counter = {};
+    std::vector<W3dPivot> m_meshes;
+    std::vector<W3dPivot> m_pivots;
+    std::unordered_map<std::string, uint8_t> m_proxy_counter;
 
     // For showing progress in ImGui
     bool m_result = false;
@@ -35,7 +37,7 @@ private:
             0, 0, 0
     };
     public:
-    W3dHierarchyModel(tinygltf::Model *model, ChunkSaveClass csave, bool optimize_for_terrain = false);
+    explicit W3dHierarchyModel(std::string container_name, tinygltf::Model *model, const ChunkSaveClass &writer, bool optimize_for_terrain = false);
     ~W3dHierarchyModel();
 
     bool convert();
@@ -50,5 +52,5 @@ private:
     bool write_meshes();
     bool write_hierarchical_level_of_detail();
 
-    bool write_mesh(tinygltf::Mesh &mesh) { return false; };
+    bool write_mesh(const tinygltf::Mesh &mesh);
 };

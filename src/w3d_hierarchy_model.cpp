@@ -4,7 +4,11 @@
 
 #include "w3d_hierarchy_model.h"
 
-W3dHierarchyModel::W3dHierarchyModel(tinygltf::Model *model, ChunkSaveClass writer, bool optimize_for_terrain) :
+#include <iostream>
+#include <utility>
+
+W3dHierarchyModel::W3dHierarchyModel(std::string container_name, tinygltf::Model *model, const ChunkSaveClass &writer, const bool optimize_for_terrain) :
+        m_container_name(std::move(container_name)),
         m_model(model),
         m_writer(writer),
         m_optimize_for_terrain(optimize_for_terrain) {
@@ -30,11 +34,11 @@ bool W3dHierarchyModel::convert() {
 
 bool W3dHierarchyModel::add_root_transform() {
     W3dPivotStruct pivot = {
-            "RootTransform",
-            0xffffffff,
-            0, 0, 0,
-            0, 0, 0,
-            0, 0, 0, 1
+            .Name="RootTransform",
+            .ParentIdx=0xffffffff,
+            .Translation={0, 0, 0},
+            .EulerAngles={0, 0, 0},
+            .Rotation={0, 0, 0, 1}
     };
 
     m_pivots.emplace_back(pivot);
@@ -64,18 +68,18 @@ bool W3dHierarchyModel::add_proxies() {
 
         strcpy(pivot.Name, mesh.name.c_str());
         pivot.ParentIdx = 0;
-        pivot.Translation.X = node.translation.size() > 0 ? node.translation[0] : 0;
-        pivot.Translation.Y = node.translation.size() > 0 ? node.translation[1] : 0;
-        pivot.Translation.Z = node.translation.size() > 0 ? node.translation[2] : 0;
-        pivot.EulerAngles.X = node.rotation.size() > 0 ? node.rotation[0] : 0;
-        pivot.EulerAngles.Y = node.rotation.size() > 0 ? node.rotation[1] : 0;
-        pivot.EulerAngles.Z = node.rotation.size() > 0 ? node.rotation[2] : 0;
+        pivot.Translation.X = !node.translation.empty() ? node.translation[0] : 0;
+        pivot.Translation.Y = !node.translation.empty() ? node.translation[1] : 0;
+        pivot.Translation.Z = !node.translation.empty() ? node.translation[2] : 0;
+        pivot.EulerAngles.X = !node.rotation.empty() ? node.rotation[0] : 0;
+        pivot.EulerAngles.Y = !node.rotation.empty() ? node.rotation[1] : 0;
+        pivot.EulerAngles.Z = !node.rotation.empty() ? node.rotation[2] : 0;
         pivot.Rotation.Q[0] = 0;
         pivot.Rotation.Q[1] = 0;
         pivot.Rotation.Q[2] = 0;
         pivot.Rotation.Q[3] = 1;
 
-        m_pivots.emplace_back(W3dPivot{pivot, true});
+        m_pivots.emplace_back(W3dPivot{.m_data=pivot, .m_proxy=true});
     }
 
     return true;
@@ -96,11 +100,12 @@ bool W3dHierarchyModel::write() {
 
 bool W3dHierarchyModel::write_hierarchy_header() {
     W3dHierarchyStruct header = {
-            W3D_CURRENT_HTREE_VERSION,
-            "TS_Level", // FIXME: Get filename/htree name (i.e. Container Name)
-            static_cast<uint32_t>(m_pivots.size()),
-            m_origin
+            .Version=W3D_CURRENT_HTREE_VERSION,
+            .Name="",
+            .NumPivots=static_cast<uint32_t>(m_pivots.size()),
+            .Center=m_origin
     };
+    std::strcpy(header.Name, m_container_name.c_str());
 
     m_writer.begin_chunk(W3D_CHUNK_HIERARCHY_HEADER);
     m_writer.write(&header, sizeof(W3dHierarchyStruct));
@@ -135,9 +140,10 @@ bool W3dHierarchyModel::write_pivot_fixups() {
 bool W3dHierarchyModel::write_meshes() {
     for (auto mesh: m_model->meshes) {
         // Don't store proxy mesh data
-        if (mesh.name.find('~'))
+        if (mesh.name.find('~') != std::string::npos)
             continue;
 
+        std::cout << "       Mesh: " << mesh.name << std::endl;
         write_mesh(mesh);
     }
 
@@ -146,11 +152,13 @@ bool W3dHierarchyModel::write_meshes() {
 
 bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
     W3dHLodHeaderStruct header {
-        W3D_CURRENT_HLOD_VERSION,
-        1,
-        "ts_level",
-        "ts_level"
+        .Version=W3D_CURRENT_HLOD_VERSION,
+        .LodCount=1,
+        .Name="",
+        .HierarchyName=""
     };
+    std::strcpy(header.Name, m_container_name.c_str());
+    std::strcpy(header.HierarchyName, m_container_name.c_str());
 
     m_writer.begin_chunk(W3D_CHUNK_HLOD);
     m_writer.begin_chunk(W3D_CHUNK_HLOD_HEADER);
@@ -160,8 +168,8 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
     m_writer.begin_chunk(W3D_CHUNK_HLOD_PROXY_ARRAY);
     m_writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER);
     W3dHLodArrayHeaderStruct hlod_array_header = {
-            static_cast<uint32_t>(m_pivots.size() - 1),
-            0
+            .ModelCount=static_cast<uint32_t>(m_pivots.size() - 1),
+            .MaxScreenSize=0
     };
     m_writer.write(&hlod_array_header, sizeof(W3dHLodArrayHeaderStruct));
     m_writer.end_chunk();
@@ -179,7 +187,7 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
         m_writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT);
         std::string name = piv.data().Name;
         size_t tilde_index = name.find('~');
-        printf("tilde: %zu (%s)\n", tilde_index, name.c_str());
+        // std::cout << "tilde: " << tilde_index << " (" << name.c_str() << ")" << std::endl;
         if (tilde_index)
         {
             name = name.substr(0, tilde_index);
@@ -195,6 +203,13 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
 
     m_writer.end_chunk(); // W3D_CHUNK_HLOD_PROXY_ARRAY
     m_writer.end_chunk(); // W3D_CHUNK_HLOD
+
+    return true;
+}
+
+bool W3dHierarchyModel::write_mesh(const tinygltf::Mesh &mesh) {
+    printf("WRITING MESH: %s\n", mesh.name.c_str());
+    W3dMesh w3d_mesh(m_container_name, *m_model, mesh, m_writer);
 
     return true;
 }
