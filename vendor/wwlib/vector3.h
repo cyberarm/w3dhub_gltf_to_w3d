@@ -83,7 +83,8 @@ public:
 
 
     // Constructors
-    Vector3(void) {};
+    Vector3(void) : X(0), Y(0), Z(0) {
+    } ;
 
     Vector3(const Vector3 &v) {
         X = v.X;
@@ -97,7 +98,7 @@ public:
         Z = z;
     }
 
-    Vector3(const float vector[3]) {
+    explicit Vector3(const float vector[3]) {
         X = vector[0];
         Y = vector[1];
         Z = vector[2];
@@ -275,11 +276,11 @@ public:
  * HISTORY:                                                               * 
  *   02/24/1997 GH  : Created.                                            * 
  *========================================================================*/
-Vector3 operator*(const Vector3 &a, float k) {
+inline Vector3 operator*(const Vector3 &a, float k) {
     return Vector3((a.X * k), (a.Y * k), (a.Z * k));
 }
 
-Vector3 operator*(float k, const Vector3 &a) {
+inline Vector3 operator*(float k, const Vector3 &a) {
     return Vector3((a.X * k), (a.Y * k), (a.Z * k));
 }
 
@@ -294,7 +295,7 @@ Vector3 operator*(float k, const Vector3 &a) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-Vector3 operator/(const Vector3 &a, float k) {
+inline Vector3 operator/(const Vector3 &a, float k) {
     float ook = 1.0f / k;
     return Vector3((a.X * ook), (a.Y * ook), (a.Z * ook));
 }
@@ -311,7 +312,7 @@ Vector3 operator/(const Vector3 &a, float k) {
  * HISTORY:                                                               * 
  *   02/24/1997 GH  : Created.                                            * 
  *========================================================================*/
-Vector3 operator+(const Vector3 &a, const Vector3 &b) {
+inline Vector3 operator+(const Vector3 &a, const Vector3 &b) {
     return Vector3(
             a.X + b.X,
             a.Y + b.Y,
@@ -331,7 +332,7 @@ Vector3 operator+(const Vector3 &a, const Vector3 &b) {
  * HISTORY:                                                               * 
  *   02/24/1997 GH  : Created.                                            * 
  *========================================================================*/
-Vector3 operator-(const Vector3 &a, const Vector3 &b) {
+inline Vector3 operator-(const Vector3 &a, const Vector3 &b) {
     return Vector3(
             a.X - b.X,
             a.Y - b.Y,
@@ -350,13 +351,13 @@ Vector3 operator-(const Vector3 &a, const Vector3 &b) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-float operator*(const Vector3 &a, const Vector3 &b) {
+inline float operator*(const Vector3 &a, const Vector3 &b) {
     return a.X * b.X +
            a.Y * b.Y +
            a.Z * b.Z;
 }
 
-float Vector3::Dot_Product(const Vector3 &a, const Vector3 &b) {
+inline float Vector3::Dot_Product(const Vector3 &a, const Vector3 &b) {
     return a * b;
 }
 
@@ -372,7 +373,7 @@ float Vector3::Dot_Product(const Vector3 &a, const Vector3 &b) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-bool operator==(const Vector3 &a, const Vector3 &b) {
+inline bool operator==(const Vector3 &a, const Vector3 &b) {
     return ((a.X == b.X) && (a.Y == b.Y) && (a.Z == b.Z));
 }
 
@@ -387,7 +388,7 @@ bool operator==(const Vector3 &a, const Vector3 &b) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-bool operator!=(const Vector3 &a, const Vector3 &b) {
+inline bool operator!=(const Vector3 &a, const Vector3 &b) {
     return ((a.X != b.X) || (a.Y != b.Y) || (a.Z != b.Z));
 }
 
@@ -402,7 +403,7 @@ bool operator!=(const Vector3 &a, const Vector3 &b) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-bool Equal_Within_Epsilon(const Vector3 &a, const Vector3 &b, float epsilon) {
+inline bool Equal_Within_Epsilon(const Vector3 &a, const Vector3 &b, float epsilon) {
     return ((WWMath::Fabs(a.X - b.X) < epsilon) &&
             (WWMath::Fabs(a.Y - b.Y) < epsilon) &&
             (WWMath::Fabs(a.Z - b.Z) < epsilon));
@@ -420,7 +421,7 @@ bool Equal_Within_Epsilon(const Vector3 &a, const Vector3 &b, float epsilon) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-Vector3 Vector3::Cross_Product(const Vector3 &a, const Vector3 &b) {
+inline Vector3 Vector3::Cross_Product(const Vector3 &a, const Vector3 &b) {
     return Vector3(
             (a.Y * b.Z - a.Z * b.Y),
             (a.Z * b.X - a.X * b.Z),
@@ -428,22 +429,22 @@ Vector3 Vector3::Cross_Product(const Vector3 &a, const Vector3 &b) {
     );
 }
 
-void Vector3::Cross_Product(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
+inline void Vector3::Cross_Product(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
     assert(set_result != &a);
     set_result->X = (a.Y * b.Z - a.Z * b.Y);
     set_result->Y = (a.Z * b.X - a.X * b.Z);
     set_result->Z = (a.X * b.Y - a.Y * b.X);
 }
 
-float Vector3::Cross_Product_X(const Vector3 &a, const Vector3 &b) {
+inline float Vector3::Cross_Product_X(const Vector3 &a, const Vector3 &b) {
     return a.Y * b.Z - a.Z * b.Y;
 }
 
-float Vector3::Cross_Product_Y(const Vector3 &a, const Vector3 &b) {
+inline float Vector3::Cross_Product_Y(const Vector3 &a, const Vector3 &b) {
     return a.Z * b.X - a.X * b.Z;
 }
 
-float Vector3::Cross_Product_Z(const Vector3 &a, const Vector3 &b) {
+inline float Vector3::Cross_Product_Z(const Vector3 &a, const Vector3 &b) {
     return a.X * b.Y - a.Y * b.X;
 }
 
@@ -458,7 +459,7 @@ float Vector3::Cross_Product_Z(const Vector3 &a, const Vector3 &b) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-void Vector3::Normalize() {
+inline void Vector3::Normalize() {
     float len2 = Length2();
     if (len2 != 0.0f) {
         float oolen = WWMath::Inv_Sqrt(Length2());
@@ -468,7 +469,7 @@ void Vector3::Normalize() {
     }
 }
 
-Vector3 Normalize(const Vector3 &vec) {
+inline Vector3 Normalize(const Vector3 &vec) {
     float len2 = vec.Length2();
     if (len2 != 0.0f) {
         float oolen = WWMath::Inv_Sqrt(len2);
@@ -488,7 +489,7 @@ Vector3 Normalize(const Vector3 &vec) {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-float Vector3::Length() const {
+inline float Vector3::Length() const {
     return WWMath::Sqrt(Length2());
 }
 
@@ -503,7 +504,7 @@ float Vector3::Length() const {
  *                                                                        * 
  * HISTORY:                                                               * 
  *========================================================================*/
-float Vector3::Length2() const {
+inline float Vector3::Length2() const {
     return X * X + Y * Y + Z * Z;
 }
 
@@ -520,7 +521,7 @@ float Vector3::Length2() const {
  * HISTORY:                                                                                    *
  *   7/15/98    GTH : Created.                                                                 *
  *=============================================================================================*/
-float Vector3::Quick_Length(void) const {
+inline float Vector3::Quick_Length(void) const {
     // this method of approximating the length comes from Graphics Gems 1 and
     // supposedly gives an error of +/- 8%
     float max = WWMath::Fabs(X);
@@ -560,7 +561,7 @@ float Vector3::Quick_Length(void) const {
  * HISTORY:                                                                                    * 
  *   08/11/1997 GH  : Created.                                                                 * 
  *=============================================================================================*/
-void Swap(Vector3 &a, Vector3 &b) {
+inline void Swap(Vector3 &a, Vector3 &b) {
     Vector3 tmp(a);
     a = b;
     b = tmp;
@@ -578,7 +579,7 @@ void Swap(Vector3 &a, Vector3 &b) {
  * HISTORY:                                                                                    * 
  *   08/11/1997 GH  : Created.                                                                 * 
  *=============================================================================================*/
-Vector3 Lerp(const Vector3 &a, const Vector3 &b, float alpha) {
+inline Vector3 Lerp(const Vector3 &a, const Vector3 &b, float alpha) {
     return Vector3(
             (a.X + (b.X - a.X) * alpha),
             (a.Y + (b.Y - a.Y) * alpha),
@@ -599,14 +600,14 @@ Vector3 Lerp(const Vector3 &a, const Vector3 &b, float alpha) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result) {
+inline void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result) {
     assert(set_result != NULL);
     set_result->X = (a.X + (b.X - a.X) * alpha);
     set_result->Y = (a.Y + (b.Y - a.Y) * alpha);
     set_result->Z = (a.Z + (b.Z - a.Z) * alpha);
 }
 
-void Vector3::Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result) {
+inline void Vector3::Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result) {
     assert(set_result != NULL);
     set_result->X = (a.X + (b.X - a.X) * alpha);
     set_result->Y = (a.Y + (b.Y - a.Y) * alpha);
@@ -625,7 +626,7 @@ void Vector3::Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Add(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
+inline void Vector3::Add(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
     assert(set_result != NULL);
     set_result->X = a.X + b.X;
     set_result->Y = a.Y + b.Y;
@@ -645,7 +646,7 @@ void Vector3::Add(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Subtract(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
+inline void Vector3::Subtract(const Vector3 &a, const Vector3 &b, Vector3 *set_result) {
     assert(set_result != NULL);
     set_result->X = a.X - b.X;
     set_result->Y = a.Y - b.Y;
@@ -665,7 +666,7 @@ void Vector3::Subtract(const Vector3 &a, const Vector3 &b, Vector3 *set_result) 
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Update_Min(const Vector3 &a) {
+inline void Vector3::Update_Min(const Vector3 &a) {
     if (a.X < X) X = a.X;
     if (a.Y < Y) Y = a.Y;
     if (a.Z < Z) Z = a.Z;
@@ -684,7 +685,7 @@ void Vector3::Update_Min(const Vector3 &a) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Update_Max(const Vector3 &a) {
+inline void Vector3::Update_Max(const Vector3 &a) {
     if (a.X > X) X = a.X;
     if (a.Y > Y) Y = a.Y;
     if (a.Z > Z) Z = a.Z;
@@ -702,7 +703,7 @@ void Vector3::Update_Max(const Vector3 &a) {
  * HISTORY:                                                                                    *
  *   11/29/99   wst : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Cap_Absolute_To(const Vector3 &a) {
+inline void Vector3::Cap_Absolute_To(const Vector3 &a) {
     if (X > 0) {
         if (a.X < X) X = a.X;
     } else {
@@ -735,7 +736,7 @@ void Vector3::Cap_Absolute_To(const Vector3 &a) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Scale(const Vector3 &scale) {
+inline void Vector3::Scale(const Vector3 &scale) {
     X *= scale.X;
     Y *= scale.Y;
     Z *= scale.Z;
@@ -754,7 +755,7 @@ void Vector3::Scale(const Vector3 &scale) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_X(float angle) {
+inline void Vector3::Rotate_X(float angle) {
     Rotate_X(sinf(angle), cosf(angle));
 }
 
@@ -771,7 +772,7 @@ void Vector3::Rotate_X(float angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_X(float s_angle, float c_angle) {
+inline void Vector3::Rotate_X(float s_angle, float c_angle) {
     float tmp_y = Y;
     float tmp_z = Z;
 
@@ -792,7 +793,7 @@ void Vector3::Rotate_X(float s_angle, float c_angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_Y(float angle) {
+inline void Vector3::Rotate_Y(float angle) {
     Rotate_Y(sinf(angle), cosf(angle));
 }
 
@@ -809,7 +810,7 @@ void Vector3::Rotate_Y(float angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_Y(float s_angle, float c_angle) {
+inline void Vector3::Rotate_Y(float s_angle, float c_angle) {
     float tmp_x = X;
     float tmp_z = Z;
 
@@ -830,7 +831,7 @@ void Vector3::Rotate_Y(float s_angle, float c_angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_Z(float angle) {
+inline void Vector3::Rotate_Z(float angle) {
     Rotate_Z(sinf(angle), cosf(angle));
 }
 
@@ -847,7 +848,7 @@ void Vector3::Rotate_Z(float angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-void Vector3::Rotate_Z(float s_angle, float c_angle) {
+inline void Vector3::Rotate_Z(float s_angle, float c_angle) {
     float tmp_x = X;
     float tmp_y = Y;
 
@@ -868,31 +869,31 @@ void Vector3::Rotate_Z(float s_angle, float c_angle) {
  * HISTORY:                                                                                    *
  *   10/18/99   gth : Created.                                                                 *
  *=============================================================================================*/
-bool Vector3::Is_Valid(void) const {
+inline bool Vector3::Is_Valid(void) const {
     return (WWMath::Is_Valid_Float(X) && WWMath::Is_Valid_Float(Y) && WWMath::Is_Valid_Float(Z));
 }
 
-float Vector3::Find_X_At_Y(float y, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_X_At_Y(float y, const Vector3 &p1, const Vector3 &p2) {
     return (p1.X + ((y - p1.Y) * ((p2.X - p1.X) / (p2.Y - p1.Y))));
 }
 
-float Vector3::Find_X_At_Z(float z, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_X_At_Z(float z, const Vector3 &p1, const Vector3 &p2) {
     return (p1.X + ((z - p1.Z) * ((p2.X - p1.X) / (p2.Z - p1.Z))));
 }
 
-float Vector3::Find_Y_At_X(float x, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_Y_At_X(float x, const Vector3 &p1, const Vector3 &p2) {
     return (p1.Y + ((x - p1.X) * ((p2.Y - p1.Y) / (p2.X - p1.X))));
 }
 
-float Vector3::Find_Y_At_Z(float z, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_Y_At_Z(float z, const Vector3 &p1, const Vector3 &p2) {
     return (p1.Y + ((z - p1.Z) * ((p2.Y - p1.Y) / (p2.Z - p1.Z))));
 }
 
-float Vector3::Find_Z_At_X(float x, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_Z_At_X(float x, const Vector3 &p1, const Vector3 &p2) {
     return (p1.Z + ((x - p1.X) * ((p2.Z - p1.Z) / (p2.X - p1.X))));
 }
 
-float Vector3::Find_Z_At_Y(float y, const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Find_Z_At_Y(float y, const Vector3 &p1, const Vector3 &p2) {
     return (p1.Z + ((y - p1.Y) * ((p2.Z - p1.Z) / (p2.Y - p1.Y))));
 }
 
@@ -905,7 +906,7 @@ float Vector3::Find_Z_At_Y(float y, const Vector3 &p1, const Vector3 &p2) {
  * HISTORY:                                                                                    *
  *   11/29/1999MLL: Created.                                                                   *
  *=============================================================================================*/
-float Vector3::Distance(const Vector3 &p1, const Vector3 &p2) {
+inline float Vector3::Distance(const Vector3 &p1, const Vector3 &p2) {
     Vector3 temp;
     temp = p1 - p2;
     return (temp.Length());
@@ -920,9 +921,8 @@ float Vector3::Distance(const Vector3 &p1, const Vector3 &p2) {
  * HISTORY:                                                                                    *
  *   11/29/1999MLL: Created.                                                                   *
  *=============================================================================================*/
-float Vector3::Quick_Distance(const Vector3 &p1, const Vector3 &p2) {
-    Vector3 temp;
-    temp = p1 - p2;
+inline float Vector3::Quick_Distance(const Vector3 &p1, const Vector3 &p2) {
+    Vector3 temp = p1 - p2;
     return (temp.Quick_Length());
 }
 
@@ -935,7 +935,7 @@ float Vector3::Quick_Distance(const Vector3 &p1, const Vector3 &p2) {
  * HISTORY:                                                                                    *
  *   11/29/1999MLL: Created.                                                                   *
  *=============================================================================================*/
-unsigned long Vector3::Convert_To_ABGR(void) const {
+inline unsigned long Vector3::Convert_To_ABGR(void) const {
     return (unsigned(255) << 24) |
            (unsigned(Z * 255.0f) << 16) |
            (unsigned(Y * 255.0f) << 8) |
@@ -951,7 +951,7 @@ unsigned long Vector3::Convert_To_ABGR(void) const {
  * HISTORY:                                                                                    *
  *   11/29/1999MLL: Created.                                                                   *
  *=============================================================================================*/
-unsigned long Vector3::Convert_To_ARGB(void) const {
+inline unsigned long Vector3::Convert_To_ARGB(void) const {
     return (unsigned(255) << 24) |
            (unsigned(X * 255.0f) << 16) |
            (unsigned(Y * 255.0f) << 8) |
