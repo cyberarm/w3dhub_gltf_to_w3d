@@ -7,6 +7,7 @@
 #include "w3d_file.h"
 #include "tiny_gltf.h"
 #include "chunkio.h"
+#include "vector3.h"
 
 class W3dMesh {
 private:
@@ -23,7 +24,8 @@ private:
     // FIXME: Textures can also have an **OPTIONAL** W3dTextureInfoStruct attached
     //        probably needs its own struct to tie texture name and W3dTextureInfoStruct together
     std::vector<std::string> m_textures = {};
-    std::vector<std::string> m_material_passes = {}; // FIXME: Create a class/struct for this to hold everything for it...
+    std::vector<std::string> m_material_passes = {};
+    // FIXME: Create a class/struct for this to hold everything for it...
     W3dMeshAABTreeHeader m_aabb_tree_header = {};
     std::vector<uint32_t> m_aabbtree_polygon_indices = {};
     std::vector<W3dMeshAABTreeNode> m_aabbtree_nodes = {};
@@ -34,28 +36,62 @@ private:
     ChunkSaveClass m_writer;
 
 public:
-    explicit W3dMesh(std::string &container_name, const tinygltf::Model &model, const tinygltf::Mesh &mesh, const ChunkSaveClass &writer);
+    explicit W3dMesh(std::string &container_name, const tinygltf::Model &model, const tinygltf::Mesh &mesh,
+                     const ChunkSaveClass &writer);
 
     bool convert();
+
+    bool add_user_text();
+
     bool add_vertices();
-    bool add_normals();
+
+    bool add_vertex_normals();
+
     bool add_triangles();
-    bool add_shade_indices();
-    bool add_vertex_material_info();
-    bool add_vertice_materials();
+
+    bool add_vertex_influences();
+
+    bool add_vertex_shade_indices();
+
+    bool add_material_info();
+
+    bool add_vertex_materials();
+
+    bool add_shaders();
+
     bool add_textures();
+
     bool add_material_passes();
+
     bool add_aabb_tree();
 
     bool write();
+
     bool write_header();
+
+    bool write_user_text();
+
     bool write_vertices();
-    bool write_normals();
+
+    bool write_vertex_normals();
+
     bool write_triangles();
-    bool write_shade_indices();
-    bool write_vertex_material_info();
-    bool write_vertice_materials();
+
+    bool write_vertex_influences();
+
+    bool write_vertex_shade_indices();
+
+    bool write_material_info();
+
+    bool write_vertex_materials();
+
+    bool write_shaders();
+
     bool write_textures();
+
     bool write_material_passes();
+
     bool write_aabb_tree();
+
+    void compute_bounding_sphere();
 };

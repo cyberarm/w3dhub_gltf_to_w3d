@@ -55,18 +55,13 @@ bool W3dHierarchyModel::add_pivots() {
 bool W3dHierarchyModel::add_proxies() {
     for (auto node : m_model->nodes)
     {
-        if (node.mesh < 0)
-            continue;
-
-        tinygltf::Mesh mesh = m_model->meshes.at(node.mesh);
-
         // Node's mesh is not a proxy/placeholder/pivot thingy
-        if (mesh.name.find('~') == std::string::npos)
+        if (node.name.find('~') == std::string::npos)
             continue;
 
         W3dPivotStruct pivot = {};
 
-        strcpy(pivot.Name, mesh.name.c_str());
+        strcpy(pivot.Name, node.name.c_str());
         pivot.ParentIdx = 0;
         pivot.Translation.X = !node.translation.empty() ? node.translation[0] : 0;
         pivot.Translation.Y = !node.translation.empty() ? node.translation[1] : 0;
@@ -138,12 +133,17 @@ bool W3dHierarchyModel::write_pivot_fixups() {
 }
 
 bool W3dHierarchyModel::write_meshes() {
-    for (auto mesh: m_model->meshes) {
-        // Don't store proxy mesh data
-        if (mesh.name.find('~') != std::string::npos)
+    for (const auto node : m_model->nodes)
+    {
+        if (node.mesh < 0)
             continue;
 
-        std::cout << "       Mesh: " << mesh.name << std::endl;
+        // Don't store proxy mesh data
+        if (node.name.find('~') != std::string::npos)
+            continue;
+
+        const auto &mesh = m_model->meshes.at(node.mesh);
+
         write_mesh(mesh);
     }
 
@@ -208,7 +208,7 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
 }
 
 bool W3dHierarchyModel::write_mesh(const tinygltf::Mesh &mesh) {
-    printf("WRITING MESH: %s\n", mesh.name.c_str());
+    std::cout << "WRITING MESH: " << mesh.name.c_str() << std::endl;
     W3dMesh w3d_mesh(m_container_name, *m_model, mesh, m_writer);
 
     return true;

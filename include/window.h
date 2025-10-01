@@ -24,7 +24,8 @@
 #include <SDL3/SDL.h>
 
 #define APP_TITLE "GLTF to W3D Converter | ALPHA QUALITY SOFTWARE USE AT YOUR OWN RISK!"
-#define GLTF_FILENAME "D:/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Level/ts_level.glb"
+#define GLTF_FILENAME "C:/Users/cyber/Nextcloud/Documents/Blender/W3D/tsr_basic_test_map.glb"
+// #define GLTF_FILENAME "D:/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Level/ts_level.glb"
 #define W3D_FILENAME "D:/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Level/ts_level.w3d"
 
 class Window {
@@ -64,5 +65,12 @@ public:
 
     bool load_model(const std::string &filename);
 
-    bool export_w3d_hierarchy_model(const std::string &container_name, const std::string &filename, bool optimize_for_terrain);
+    bool export_w3d_hierarchy_model(const std::string &container_name, const std::string &filename,
+                                    bool optimize_for_terrain);
+
+    static bool intern_fake_image_loader(tinygltf::Image *image, const int image_idx,
+                                         std::string * error, std::string * warn, int req_width, int req_height,
+                                         const unsigned char *bytes, int size, void * user_data) {
+        return true;
+    }
 };

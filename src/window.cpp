@@ -379,17 +379,21 @@ bool Window::load_model(const std::string &filename) {
     std::string err;
     std::string warn;
 
+    // We've got an image, cool beans! But we don't care about its contents, only its name so don't load anything.
+    loader.SetImageLoader(intern_fake_image_loader, nullptr);
+
     bool result = false;
     if (filename.ends_with(".glb"))
         result = loader.LoadBinaryFromFile(&m_model, &err, &warn, filename);
     if (filename.ends_with(".gltf"))
         result = loader.LoadASCIIFromFile(&m_model, &err, &warn, filename);
+
     if (!warn.empty()) {
         std::cout << "WARN: " << warn << std::endl;
     }
 
     if (!err.empty()) {
-        std::cout << "ERR: " << err << std::endl;
+        std::cout << "ERROR: " << err << std::endl;
     }
 
     if (!result)
