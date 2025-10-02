@@ -67,13 +67,13 @@ bool W3dHierarchyModel::add_proxies() {
         pivot.Translation.X = !node.translation.empty() ? node.translation[0] : 0;
         pivot.Translation.Y = !node.translation.empty() ? node.translation[1] : 0;
         pivot.Translation.Z = !node.translation.empty() ? node.translation[2] : 0;
-        pivot.EulerAngles.X = !node.rotation.empty() ? node.rotation[0] : 0;
-        pivot.EulerAngles.Y = !node.rotation.empty() ? node.rotation[1] : 0;
-        pivot.EulerAngles.Z = !node.rotation.empty() ? node.rotation[2] : 0;
-        pivot.Rotation.Q[0] = 0;
-        pivot.Rotation.Q[1] = 0;
-        pivot.Rotation.Q[2] = 0;
-        pivot.Rotation.Q[3] = 1;
+        pivot.EulerAngles.X = !node.rotation.empty() ? node.rotation[0] : 0; // FIXME: Convert Quat to Euler?
+        pivot.EulerAngles.Y = !node.rotation.empty() ? node.rotation[1] : 0; // FIXME: Convert Quat to Euler?
+        pivot.EulerAngles.Z = !node.rotation.empty() ? node.rotation[2] : 0; // FIXME: Convert Quat to Euler?
+        pivot.Rotation.Q[0] = !node.rotation.empty() ? node.rotation[0] : 0;
+        pivot.Rotation.Q[1] = !node.rotation.empty() ? node.rotation[1] : 0;
+        pivot.Rotation.Q[2] = !node.rotation.empty() ? node.rotation[2] : 0;
+        pivot.Rotation.Q[3] = !node.rotation.empty() ? node.rotation[3] : 1;
 
         m_pivots.emplace_back(W3dPivot{.m_data=pivot, .m_proxy=true});
     }
