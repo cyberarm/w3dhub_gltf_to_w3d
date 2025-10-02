@@ -37,7 +37,7 @@ private:
             0, 0, 0
     };
     public:
-    explicit W3dHierarchyModel(std::string container_name, tinygltf::Model *model, const ChunkSaveClass &writer, bool optimize_for_terrain = false);
+    explicit W3dHierarchyModel(const std::string &container_name, tinygltf::Model *model, const ChunkSaveClass &writer, bool optimize_for_terrain = false);
     ~W3dHierarchyModel();
 
     bool convert();

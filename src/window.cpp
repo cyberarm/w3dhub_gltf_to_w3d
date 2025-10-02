@@ -23,7 +23,7 @@ Window::Window() {
                 std::cout << "       scale [OpenGL/Vulkan]: " << "none (1, 1, 1)" << std::endl;
         }
 
-        export_w3d_hierarchy_model("TS_Level", W3D_FILENAME, true);
+        export_w3d_hierarchy_model("TS_LEVEL", W3D_FILENAME, true);
     }
 }
 

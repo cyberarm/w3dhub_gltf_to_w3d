@@ -9,7 +9,7 @@
 #include "SDL3/SDL_endian.h"
 
 W3dMesh::W3dMesh(std::string &container_name, const tinygltf::Model &model, const tinygltf::Mesh &mesh,
-                 const ChunkSaveClass &writer) : m_container_name(std::move(container_name)),
+                 const ChunkSaveClass &writer) : m_container_name(container_name),
                                                  m_gltf_model(model),
                                                  m_gltf_mesh(mesh),
                                                  m_writer(writer) {
@@ -152,8 +152,8 @@ bool W3dMesh::add_triangles() {
         }
 
         // Load triangle indices from buffer
-        W3dTriStruct triangle = {};
         if (prim.indices >= 0) {
+            W3dTriStruct triangle = {};
             auto &accessor = m_gltf_model.accessors.at(prim.indices);
             auto &buffer_view = m_gltf_model.bufferViews.at(accessor.bufferView);
             auto &buffer = m_gltf_model.buffers.at(buffer_view.buffer);
@@ -162,7 +162,7 @@ bool W3dMesh::add_triangles() {
             assert(accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT); // uint16_t
             assert(accessor.type == TINYGLTF_TYPE_SCALAR);
 
-            for (size_t i = 0; i < buffer_view.byteLength / (sizeof(uint32_t) * 3);) {
+            for (size_t i = 0; i < buffer_view.byteLength;) {
                 for (size_t j = 0; j < 3; j++) {
                     uint16_t value;
                     const std::array byte_array = {

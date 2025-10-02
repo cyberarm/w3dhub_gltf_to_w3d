@@ -4,11 +4,12 @@
 
 #include "w3d_hierarchy_model.h"
 
+#include <format>
 #include <iostream>
 #include <utility>
 
-W3dHierarchyModel::W3dHierarchyModel(std::string container_name, tinygltf::Model *model, const ChunkSaveClass &writer, const bool optimize_for_terrain) :
-        m_container_name(std::move(container_name)),
+W3dHierarchyModel::W3dHierarchyModel(const std::string &container_name, tinygltf::Model *model, const ChunkSaveClass &writer, const bool optimize_for_terrain) :
+        m_container_name(container_name),
         m_model(model),
         m_writer(writer),
         m_optimize_for_terrain(optimize_for_terrain) {
@@ -144,6 +145,11 @@ bool W3dHierarchyModel::write_meshes() {
 
         const auto &mesh = m_model->meshes.at(node.mesh);
 
+        W3dPivotStruct pivot = {};
+        pivot.ParentIdx = 0;
+        strcpy(pivot.Name, std::format("{}.{}",m_container_name.c_str(), node.name.c_str()).c_str());
+        m_meshes.emplace_back(pivot);
+
         write_mesh(mesh);
     }
 
@@ -153,9 +159,7 @@ bool W3dHierarchyModel::write_meshes() {
 bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
     W3dHLodHeaderStruct header {
         .Version=W3D_CURRENT_HLOD_VERSION,
-        .LodCount=1,
-        .Name="",
-        .HierarchyName=""
+        .LodCount=1
     };
     std::strcpy(header.Name, m_container_name.c_str());
     std::strcpy(header.HierarchyName, m_container_name.c_str());
@@ -165,16 +169,40 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
     m_writer.write(&header, sizeof(W3dHLodHeaderStruct));
     m_writer.end_chunk();
 
-    m_writer.begin_chunk(W3D_CHUNK_HLOD_PROXY_ARRAY);
+    m_writer.begin_chunk(W3D_CHUNK_HLOD_LOD_ARRAY);
     m_writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER);
     W3dHLodArrayHeaderStruct hlod_array_header = {
-            .ModelCount=static_cast<uint32_t>(m_pivots.size() - 1),
-            .MaxScreenSize=0
-    };
+        .ModelCount=static_cast<uint32_t>(m_meshes.size()),
+        .MaxScreenSize=1.0f
+};
     m_writer.write(&hlod_array_header, sizeof(W3dHLodArrayHeaderStruct));
     m_writer.end_chunk();
 
     size_t i = 0;
+    for(auto piv : m_meshes)
+    {
+        m_writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT);
+        std::string name = piv.data().Name;
+        W3dHLodSubObjectStruct hlod_subobject_struct {};
+        hlod_subobject_struct.BoneIndex = i;
+        strcpy(hlod_subobject_struct.Name, name.c_str());
+        m_writer.write(&hlod_subobject_struct, sizeof(W3dHLodSubObjectStruct));
+        m_writer.end_chunk(); // W3D_CHUNK_HLOD_SUB_OBJECT
+
+        i++;
+    }
+    m_writer.end_chunk(); // W3D_CHUNK_HLOD_LOD_ARRAY
+
+    m_writer.begin_chunk(W3D_CHUNK_HLOD_PROXY_ARRAY);
+    m_writer.begin_chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER);
+    hlod_array_header = {
+            .ModelCount=static_cast<uint32_t>(m_pivots.size()),
+            .MaxScreenSize=0
+    };
+    m_writer.write(&hlod_array_header, sizeof(W3dHLodArrayHeaderStruct));
+    m_writer.end_chunk(); // W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER
+
+    i = 0;
     for(auto piv : m_pivots)
     {
         // Skip non proxies
@@ -196,7 +224,7 @@ bool W3dHierarchyModel::write_hierarchical_level_of_detail() {
         hlod_subobject_struct.BoneIndex = i;
         strcpy(hlod_subobject_struct.Name, name.c_str());
         m_writer.write(&hlod_subobject_struct, sizeof(W3dHLodSubObjectStruct));
-        m_writer.end_chunk();
+        m_writer.end_chunk(); // W3D_CHUNK_HLOD_SUB_OBJECT
 
         i++;
     }
