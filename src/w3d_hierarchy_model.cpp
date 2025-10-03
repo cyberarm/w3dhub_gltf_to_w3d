@@ -56,7 +56,7 @@ bool W3dHierarchyModel::add_pivots() {
 bool W3dHierarchyModel::add_proxies() {
     for (auto node : m_model->nodes)
     {
-        // Node's mesh is not a proxy/placeholder/pivot thingy
+        // Node is not a proxy/placeholder/pivot thingy
         if (node.name.find('~') == std::string::npos)
             continue;
 

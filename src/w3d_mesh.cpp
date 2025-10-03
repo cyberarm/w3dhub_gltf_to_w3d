@@ -6,8 +6,6 @@
 
 #include <iostream>
 
-#include "SDL3/SDL_endian.h"
-
 W3dMesh::W3dMesh(std::string &container_name, const tinygltf::Model &model, const tinygltf::Mesh &mesh,
                  const ChunkSaveClass &writer) : m_container_name(container_name),
                                                  m_gltf_model(model),
@@ -177,7 +175,8 @@ bool W3dMesh::add_triangles() {
                     triangle.Vindex[j] = value;
                 }
 
-                // triangle.Attributes =
+                triangle.Attributes = 10;
+                triangle.Normal = {.X = 0, .Y = 0, .Z = 1};
                 m_triangles.push_back(triangle);
             }
         } else {
@@ -193,15 +192,52 @@ bool W3dMesh::add_vertex_influences() {
 }
 
 bool W3dMesh::add_vertex_shade_indices() {
-    return false;
+    return true;
 }
 
 bool W3dMesh::add_material_info() {
+    // FIXME: Get actual data from mesh
+    m_material_info.PassCount = 1;
+    m_material_info.VertexMaterialCount = 1;
+    m_material_info.ShaderCount = 1;
+    m_material_info.TextureCount = 1;
+
     return false;
 }
 
 bool W3dMesh::add_vertex_materials() {
-    return false;
+    for (auto &prim: m_gltf_mesh.primitives) {
+        W3dVertexMaterialStruct material = {};
+
+        auto &gltf_material = m_gltf_model.materials.at(prim.material);
+
+        // Has texture
+        if (gltf_material.pbrMetallicRoughness.baseColorTexture.index >= 0) {
+        }
+
+        auto &base_color = gltf_material.pbrMetallicRoughness.baseColorFactor;
+        material.Diffuse.R = base_color.at(0) * 255;
+        material.Diffuse.G = base_color.at(1) * 255;
+        material.Diffuse.B = base_color.at(2) * 255;
+
+        material.Ambient.R = 255;
+        material.Ambient.G = 255;
+        material.Ambient.B = 255;
+
+        material.Specular.R = 0;
+        material.Specular.G = 0;
+        material.Specular.B = 0;
+
+        material.Emissive.R = 0;
+        material.Emissive.G = 0;
+        material.Emissive.B = 0;
+
+        material.Shininess = 1.0f;
+        material.Opacity = 1.0f;
+        material.Translucency = 0.0f;
+    }
+
+    return true;
 }
 
 bool W3dMesh::add_shaders() {
@@ -318,26 +354,126 @@ bool W3dMesh::write_vertex_influences() {
 }
 
 bool W3dMesh::write_vertex_shade_indices() {
-    return false;
+    if (m_normals.size() <= 0)
+        return true;
+
+    m_writer.begin_chunk(W3D_CHUNK_VERTEX_SHADE_INDICES);
+    for (uint32_t i = 0; i < m_vertices.size(); i++) {
+        m_writer.write(&i, sizeof(uint32_t));
+    }
+    m_writer.end_chunk(); // W3D_CHUNK_VERTEX_SHADE_INDICES
+
+    return true;
 }
 
 bool W3dMesh::write_material_info() {
+    m_writer.begin_chunk(W3D_CHUNK_MATERIAL_INFO);
+    m_writer.write(&m_material_info, sizeof(m_material_info));
+    m_writer.end_chunk(); // W3D_CHUNK_MATERIAL_INFO
+
     return false;
 }
 
 bool W3dMesh::write_vertex_materials() {
+    m_writer.begin_chunk(W3D_CHUNK_VERTEX_MATERIALS);
+
+    for (size_t i = 0; i < 1; i++) {
+        m_writer.begin_chunk(W3D_CHUNK_VERTEX_MATERIAL);
+
+        m_writer.begin_chunk(W3D_CHUNK_VERTEX_MATERIAL_NAME);
+        m_writer.write("Material_Name", sizeof("Material_Name"));
+        m_writer.end_chunk(); // W3D_CHUNK_VERTEX_MATERIAL_NAME
+
+        m_writer.begin_chunk(W3D_CHUNK_VERTEX_MATERIAL_INFO);
+        W3dVertexMaterialStruct material;
+        material.Attributes = W3DVERTMAT_STAGE0_MAPPING_UV | W3DVERTMAT_STAGE1_MAPPING_UV;
+        material.Ambient = W3dRGBStruct{255, 255, 255};
+        material.Diffuse = W3dRGBStruct{255, 255, 255};
+        material.Specular = W3dRGBStruct{0, 0, 0};
+        material.Emissive = W3dRGBStruct{0, 0, 0};
+        material.Shininess = 1.0f;
+        material.Opacity = 1.0f;
+        material.Translucency = 0.0f;
+
+        m_writer.write(&material, sizeof(material));
+        m_writer.end_chunk(); // W3D_CHUNK_VERTEX_MATERIAL_INFO
+
+        m_writer.end_chunk(); // W3D_CHUNK_VERTEX_MATERIAL
+    }
+    m_writer.end_chunk(); // W3D_CHUNK_VERTEX_MATERIALS
+
     return false;
 }
 
 bool W3dMesh::write_shaders() {
+    m_writer.begin_chunk(W3D_CHUNK_SHADERS);
+
+    for (size_t i = 0; i < 1; i++) {
+        W3dShaderStruct shader;
+        shader.DepthCompare = W3DSHADER_DEPTHCOMPARE_PASS_LEQUAL;
+        shader.DepthMask = W3DSHADER_DEPTHMASK_WRITE_ENABLE;
+        shader.DestBlend = W3DSHADER_DESTBLENDFUNC_ZERO;
+        shader.PriGradient = W3DSHADER_PRIGRADIENT_MODULATE;
+        shader.SecGradient = W3DSHADER_SECGRADIENT_DISABLE;
+        shader.SrcBlend = W3DSHADER_SRCBLENDFUNC_ONE;
+        shader.Texturing = W3DSHADER_TEXTURING_ENABLE;
+        shader.DetailColorFunc = W3DSHADER_DETAILCOLORFUNC_DISABLE;
+        shader.DetailAlphaFunc = W3DSHADER_DETAILALPHAFUNC_DISABLE;
+        shader.AlphaTest = W3DSHADER_ALPHATEST_DISABLE;
+
+        m_writer.write(&shader, sizeof(shader));
+    }
+
+    m_writer.end_chunk(); // W3D_CHUNK_SHADERS
+
     return false;
 }
 
 bool W3dMesh::write_textures() {
+    m_writer.begin_chunk(W3D_CHUNK_TEXTURES);
+
+    for (size_t i = 0; i < 1; i++) {
+        m_writer.begin_chunk(W3D_CHUNK_TEXTURE);
+        m_writer.begin_chunk(W3D_CHUNK_TEXTURE_NAME);
+        m_writer.write("T_Grass_Country2.dds", sizeof("T_Grass_Country2.dds"));
+        m_writer.end_chunk(); // W3D_CHUNK_TEXTURE_NAME
+        m_writer.end_chunk(); // W3D_CHUNK_TEXTURE
+    }
+
+    m_writer.end_chunk(); // W3D_CHUNK_TEXTURES
+
     return false;
 }
 
 bool W3dMesh::write_material_passes() {
+    m_writer.begin_chunk(W3D_CHUNK_MATERIAL_PASS);
+
+    for (size_t i = 0; i < 1; i++) {
+        int32_t v = 0;
+        m_writer.begin_chunk(W3D_CHUNK_VERTEX_MATERIAL_IDS);
+        m_writer.write(&v, sizeof(int32_t));
+        m_writer.end_chunk(); // W3D_CHUNK_VERTEX_MATERIAL_IDS
+
+        m_writer.begin_chunk(W3D_CHUNK_SHADER_IDS);
+        m_writer.write(&v, sizeof(int32_t));
+        m_writer.end_chunk(); // W3D_CHUNK_SHADER_IDS
+
+        m_writer.begin_chunk(W3D_CHUNK_TEXTURE_STAGE);
+        m_writer.begin_chunk(W3D_CHUNK_TEXTURE_IDS);
+        m_writer.write(&v, sizeof(int32_t));
+        m_writer.end_chunk(); // W3D_CHUNK_TEXTURE_IDS
+
+        m_writer.begin_chunk(W3D_CHUNK_TEXCOORDS);
+        for (auto &vert : m_vertices) {
+            IOVector2Struct uv = {0, 1};
+            m_writer.write(&uv, sizeof(IOVector2Struct));
+        }
+        m_writer.end_chunk(); // W3D_CHUNK_TEXCOORDS
+        m_writer.end_chunk(); // W3D_CHUNK_TEXTURE_STAGE
+    }
+
+    m_writer.end_chunk(); // W3D_CHUNK_MATERIAL_PASS
+
     return false;
 }
 
