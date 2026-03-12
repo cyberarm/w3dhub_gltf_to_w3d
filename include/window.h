@@ -24,9 +24,9 @@
 #include <SDL3/SDL.h>
 
 #define APP_TITLE "GLTF to W3D Converter | ALPHA QUALITY SOFTWARE USE AT YOUR OWN RISK!"
-#define GLTF_FILENAME "C:/Users/cyber/Nextcloud/Documents/Blender/W3D/tsr_basic_test_map.glb"
+#define GLTF_FILENAME "/run/media/cyberarm/Storage/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Station/TS_Station.glb"
 // #define GLTF_FILENAME "D:/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Level/ts_level.glb"
-#define W3D_FILENAME "D:/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Level/ts_level.w3d"
+#define W3D_FILENAME "/run/media/cyberarm/Storage/W3DHub/games/tiberian-sun-reborn/LevelEdit/TS_Station/TS_Station.w3d"
 
 class Window {
 private:

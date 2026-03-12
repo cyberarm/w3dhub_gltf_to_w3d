@@ -3,7 +3,9 @@ project(w3dhub_gltf_to_w3d)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SDL3_DIR vendor/SDL3/cmake)
+if (WIN32)
+    set(SDL3_DIR vendor/SDL3/cmake)
+endif ()
 find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 
 set(SOURCES

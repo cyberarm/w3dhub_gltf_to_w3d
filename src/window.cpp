@@ -23,7 +23,7 @@ Window::Window() {
                 std::cout << "       scale [OpenGL/Vulkan]: " << "none (1, 1, 1)" << std::endl;
         }
 
-        export_w3d_hierarchy_model("TS_LEVEL", W3D_FILENAME, true);
+        export_w3d_hierarchy_model("TS_Station", W3D_FILENAME, true);
     }
 }
 
@@ -122,7 +122,18 @@ bool Window::init_imgui() {
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
     //IM_ASSERT(font != nullptr);
     // FIXME: Dynamically choose font based on platform and whether the font path can be found
-    m_io->Fonts->AddFontFromFileTTF("C:/Windows/Fonts/Arial.ttf");
+    constexpr std::array<const char *, 2> font_paths = {
+        "C:/Windows/Fonts/Arial.ttf", "/usr/share/fonts/TTF/DejaVuSans.ttf"
+    };
+
+    size_t i = 0;
+    while (i < font_paths.size() && !SDL_GetPathInfo(font_paths.at(i), nullptr)) {
+        i++;
+    }
+
+    if (i < font_paths.size()) {
+        m_io->Fonts->AddFontFromFileTTF(font_paths.at(i));
+    }
 
     return true;
 };

@@ -88,7 +88,7 @@ struct W3dMaterialStruct {
     uint8_t Red;                                    // Rgb colors
     uint8_t Green;
     uint8_t Blue;
-};
+} __attribute__((packed));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Version 2.0 Material, array of these are found inside the W3D_CHUNK_MATERIALS2 chunk.
@@ -107,7 +107,7 @@ struct W3dMaterial2Struct {
     uint16_t SecondaryNumFrames;                // number of animated frames (if 1, not animated)
 
     char Pad[12];                                // expansion room
-};
+} __attribute__((packed));
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ struct W3dMaterial3Struct {
     float Opacity;                        // how opaque the material is, 0.0 = invisible, 1.0 = fully opaque (default = 1)
     float Translucency;                // how much light passes through the material. (default = 0)
     float FogCoeff;                    // effect of fog (0.0=not fogged, 1.0=fogged) (default = 1)
-};
+} __attribute__((packed));
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ struct W3dMap3Struct {
     uint16_t MappingType;                // Mapping type, will be one of the above #defines (e.g. W3DMAPPING_UV)
     uint16_t FrameCount;                    // Number of frames (1 if not animated)
     float FrameRate;                    // Frame rate, frames per second in floating point
-};
+} __attribute__((packed));
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ struct W3dSurrenderTriStruct {
     W3dVectorStruct Normal;                // Face normal
     uint32_t Attributes;            // collision flags, sort method, etc
     W3dRGBStruct Gouraud[3];            // Pre-set shading values (OBSOLETE!!!)
-};
+} __attribute__((packed));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Original (Obsolete) Mesh Header
@@ -266,7 +266,7 @@ struct W3dMeshHeaderStruct {
     char HierarchyTreeName[W3D_NAME_LEN];
     char HierarchyModelName[W3D_NAME_LEN];
     uint32_t FutureUse[24];        // Reserved for future use
-};
+} __attribute__((packed));
 
 
 //
@@ -280,17 +280,17 @@ struct W3dMeshDamageStruct {
     uint32_t NumDamageColors;        // number of vertex colors to replace
     uint32_t DamageIndex;            // what index is this damage chunk assigned to
     uint32_t FutureUse[4];
-};
+} __attribute__((packed));
 
 struct W3dMeshDamageVertexStruct {
     uint32_t VertexIndex;
     W3dVectorStruct NewVertex;
-};
+} __attribute__((packed));
 
 struct W3dMeshDamageColorStruct {
     uint32_t VertexIndex;
     W3dRGBStruct NewColor;
-};
+} __attribute__((packed));
 
 
 //
@@ -311,4 +311,4 @@ struct W3dHModelAuxDataStruct {
     float LODMin;
     float LODMax;
     uint32_t FutureUse[32];
-};
+} __attribute__((packed));
